@@ -1,18 +1,29 @@
-
-from typing import List, Tuple
+# preprocess.py
+from typing import Tuple, Iterable, Union
+from pathlib import Path
 import pandas as pd
-from .load_data import load_stocks
 
-def build_arrays(tsla_path: str, aapl_path: str) -> Tuple[pd.DataFrame, list, list, list]:
+try:
+    from .load_data import load_stocks
+except ImportError:
+    from load_data import load_stocks
+
+def build_arrays(paths: Iterable[Union[str, Path]]) -> Tuple[pd.DataFrame, list, list, list]:
     """
-    Returns combined df and lists for Close (float), Volume (int), Company (str).
+    Build arrays for sorting/benchmarks from one or many CSV paths.
+    Returns:
+      df        : normalized DataFrame with Date/Open/High/Low/Close/Volume/Company
+      closes    : list[float]
+      volumes   : list[int]
+      companies : list[str]
     """
-    df = load_stocks(tsla_path, aapl_path)
-    close_prices = df["Close"].astype(float).tolist()
+    df = load_stocks(paths)
+    closes = df["Close"].astype(float).tolist()
     volumes = df["Volume"].astype(int).tolist()
     companies = df["Company"].astype(str).tolist()
-    return df, close_prices, volumes, companies
+    return df, closes, volumes, companies
 
 if __name__ == "__main__":
-    df, closes, vols, comps = build_arrays("/mnt/data/TSLA.csv", "/mnt/data/aapl_us_2025.csv")
-    print(len(df), len(closes), len(vols), len(comps))
+    files = list(Path("data").glob("*.csv"))
+    df, closes, volumes, companies = build_arrays(files)
+    print(len(df), len(closes), len(volumes), len(companies))
