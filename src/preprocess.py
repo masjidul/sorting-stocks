@@ -1,4 +1,3 @@
-# preprocess.py
 from typing import Tuple, Iterable, Union
 from pathlib import Path
 import pandas as pd
@@ -8,22 +7,27 @@ try:
 except ImportError:
     from load_data import load_stocks
 
+
 def build_arrays(paths: Iterable[Union[str, Path]]) -> Tuple[pd.DataFrame, list, list, list]:
     """
     Build arrays for sorting/benchmarks from one or many CSV paths.
-    Returns:
-      df        : normalized DataFrame with Date/Open/High/Low/Close/Volume/Company
-      closes    : list[float]
-      volumes   : list[int]
-      companies : list[str]
     """
     df = load_stocks(paths)
+
     closes = df["Close"].astype(float).tolist()
     volumes = df["Volume"].astype(int).tolist()
     companies = df["Company"].astype(str).tolist()
+
     return df, closes, volumes, companies
 
+
 if __name__ == "__main__":
-    files = list(Path("data").glob("*.csv"))
-    df, closes, volumes, companies = build_arrays(files)
-    print(len(df), len(closes), len(volumes), len(companies))
+    data_dir = Path("data")
+    paths = sorted(data_dir.glob("*.csv"))
+
+    df, closes, volumes, companies = build_arrays(paths)
+
+    print("Total rows:", len(df))
+    print("Close values:", len(closes))
+    print("Volume values:", len(volumes))
+    print("Company labels:", len(companies))

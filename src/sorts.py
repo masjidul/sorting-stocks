@@ -1,4 +1,3 @@
-
 from typing import List, Callable, Any
 
 def _cmp(a, b, reverse: bool) -> bool:
@@ -20,22 +19,27 @@ def bubble_sort(arr: List[Any], reverse: bool=False) -> List[Any]:
 
 def merge_sort(arr: List[Any], reverse: bool=False) -> List[Any]:
     A = arr.copy()
+
     def merge(left: List[Any], right: List[Any]) -> List[Any]:
-        i=j=0
+        i = j = 0
         out = []
         while i < len(left) and j < len(right):
             if _cmp(left[i], right[j], reverse):
-                out.append(right[j]); j+=1
+                out.append(right[j])
+                j += 1
             else:
-                out.append(left[i]); i+=1
-        out.extend(left[i:]); out.extend(right[j:])
+                out.append(left[i])
+                i += 1
+        out.extend(left[i:])
+        out.extend(right[j:])
         return out
 
     def msort(xs: List[Any]) -> List[Any]:
         if len(xs) <= 1:
             return xs
-        mid = len(xs)//2
+        mid = len(xs) // 2
         return merge(msort(xs[:mid]), msort(xs[mid:]))
+
     return msort(A)
 
 def quick_sort(arr, reverse: bool=False):
@@ -47,21 +51,21 @@ def quick_sort(arr, reverse: bool=False):
     A = arr.copy()
 
     def less(a, b):
-        # True if a < b in the chosen order
         return a < b if not reverse else a > b
 
     def greater(a, b):
-        # True if a > b in the chosen order
         return a > b if not reverse else a < b
 
     def qsort(lo: int, hi: int):
         if lo >= hi:
             return
-        # Random pivot to avoid ordered/worst-case inputs
+
         pivot = A[random.randint(lo, hi)]
 
-        # 3-way partition: < pivot | == pivot | > pivot
-        lt, i, gt = lo, lo, hi
+        lt = lo
+        i = lo
+        gt = hi
+
         while i <= gt:
             if less(A[i], pivot):
                 A[lt], A[i] = A[i], A[lt]
